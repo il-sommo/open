@@ -827,7 +827,12 @@ init_options (struct options *o, const bool init_gc)
   o->server_poll_timeout = 0;
 #endif
 #ifdef ENABLE_CRYPTO
+#ifdef ENABLE_CRYPTO_POLARSSL
+  o->ciphername = "BLOWFISH-CBC";
+  o->keysize = 16;
+#else
   o->ciphername = "BF-CBC";
+#endif
   o->ciphername_defined = true;
   o->authname = "SHA1";
   o->authname_defined = true;

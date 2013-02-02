@@ -67,6 +67,20 @@ tls_clear_error()
 
 static int default_ciphersuites[] =
 {
+#if POLARSSL_VERSION_NUMBER >= 0x01020000
+    TLS_DHE_RSA_WITH_AES_256_CBC_SHA,
+    TLS_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA,
+    TLS_DHE_RSA_WITH_AES_128_CBC_SHA,
+    TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA,
+    TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA,
+    TLS_RSA_WITH_AES_256_CBC_SHA,
+    TLS_RSA_WITH_CAMELLIA_256_CBC_SHA,
+    TLS_RSA_WITH_AES_128_CBC_SHA,
+    TLS_RSA_WITH_CAMELLIA_128_CBC_SHA,
+    TLS_RSA_WITH_3DES_EDE_CBC_SHA,
+    TLS_RSA_WITH_RC4_128_SHA,
+    TLS_RSA_WITH_RC4_128_MD5,
+#else
     SSL_EDH_RSA_AES_256_SHA,
     SSL_EDH_RSA_CAMELLIA_256_SHA,
     SSL_EDH_RSA_AES_128_SHA,
@@ -79,6 +93,7 @@ static int default_ciphersuites[] =
     SSL_RSA_DES_168_SHA,
     SSL_RSA_RC4_128_SHA,
     SSL_RSA_RC4_128_MD5,
+#endif
     0
 };
 
@@ -515,7 +530,9 @@ void key_state_ssl_init(struct key_state_ssl *ks_ssl,
       ssl_set_rng (ks_ssl->ctx, ctr_drbg_random, rand_ctx_get());
 
       ALLOC_OBJ_CLEAR (ks_ssl->ssn, ssl_session);
+#if  POLARSSL_VERSION_NUMBER < 0x01020000
       ssl_set_session (ks_ssl->ctx, 0, 0, ks_ssl->ssn );
+#endif
       if (ssl_ctx->allowed_ciphers)
 	ssl_set_ciphersuites (ks_ssl->ctx, ssl_ctx->allowed_ciphers);
       else
@@ -828,7 +845,11 @@ print_details (struct key_state_ssl * ks_ssl, const char *prefix)
 		    ssl_get_version (ks_ssl->ctx),
 		    ssl_get_ciphersuite(ks_ssl->ctx));
 
+#if POLARSSL_VERSION_NUMBER >= 0x01020000
+  cert = ks_ssl->ssn->peer_cert;
+#else
   cert = ks_ssl->ctx->peer_cert;
+#endif
   if (cert != NULL)
     {
       openvpn_snprintf (s2, sizeof (s2), ", " counter_format " bit RSA", (counter_type) cert->rsa.len * 8);
