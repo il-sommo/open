@@ -101,11 +101,11 @@ show_available_ciphers ()
 
 #ifndef ENABLE_SMALL
   printf ("The following ciphers and cipher modes are available\n"
-	  "for use with " PACKAGE_NAME ".  Each cipher shown below may be\n"
-	  "used as a parameter to the --cipher option.  The default\n"
-	  "key size is shown as well as whether or not it can be\n"
+      "for use with " PACKAGE_NAME ".  Each cipher shown below may be\n"
+      "used as a parameter to the --cipher option.  The default\n"
+      "key size is shown as well as whether or not it can be\n"
           "changed with the --keysize directive.  Using a CBC mode\n"
-	  "is recommended.\n\n");
+      "is recommended.\n\n");
 #endif
 
   while (*ciphers != 0)
@@ -113,8 +113,8 @@ show_available_ciphers ()
       const cipher_info_t *info = cipher_info_from_type(*ciphers);
 
       if (info && info->mode == POLARSSL_MODE_CBC)
-	printf ("%s %d bit default key\n",
-		info->name, info->key_length);
+    printf ("%s %d bit default key\n",
+        info->name, info->key_length);
 
       ciphers++;
     }
@@ -128,10 +128,10 @@ show_available_digests ()
 
 #ifndef ENABLE_SMALL
   printf ("The following message digests are available for use with\n"
-	  PACKAGE_NAME ".  A message digest is used in conjunction with\n"
-	  "the HMAC function, to authenticate received packets.\n"
-	  "You can specify a message digest as parameter to\n"
-	  "the --auth option.\n\n");
+      PACKAGE_NAME ".  A message digest is used in conjunction with\n"
+      "the HMAC function, to authenticate received packets.\n"
+      "You can specify a message digest as parameter to\n"
+      "the --auth option.\n\n");
 #endif
 
   while (*digests != 0)
@@ -139,8 +139,8 @@ show_available_digests ()
       const md_info_t *info = md_info_from_type(*digests);
 
       if (info)
-	printf ("%s %d bit default key\n",
-		info->name, info->size * 8);
+    printf ("%s %d bit default key\n",
+        info->name, info->size * 8);
       digests++;
     }
   printf ("\n");
@@ -215,7 +215,7 @@ rand_bytes (uint8_t *output, int len)
     {
       const size_t blen = min_int (len, CTR_DRBG_MAX_REQUEST);
       if (0 != ctr_drbg_random(rng_ctx, output, blen))
-	return 0;
+    return 0;
 
       output += blen;
       len -= blen;
@@ -258,20 +258,20 @@ key_des_check (uint8_t *key, int key_len, int ndc)
     {
       unsigned char *key = buf_read_alloc(&b, DES_KEY_SIZE);
       if (!key)
-	{
-	  msg (D_CRYPT_ERRORS, "CRYPTO INFO: check_key_DES: insufficient key material");
-	  goto err;
-	}
+    {
+      msg (D_CRYPT_ERRORS, "CRYPTO INFO: check_key_DES: insufficient key material");
+      goto err;
+    }
       if (0 != des_key_check_weak(key))
-	{
-	  msg (D_CRYPT_ERRORS, "CRYPTO INFO: check_key_DES: weak key detected");
-	  goto err;
-	}
+    {
+      msg (D_CRYPT_ERRORS, "CRYPTO INFO: check_key_DES: weak key detected");
+      goto err;
+    }
       if (0 != des_key_check_key_parity(key))
-	{
-	  msg (D_CRYPT_ERRORS, "CRYPTO INFO: check_key_DES: bad parity detected");
-	  goto err;
-	}
+    {
+      msg (D_CRYPT_ERRORS, "CRYPTO INFO: check_key_DES: bad parity detected");
+      goto err;
+    }
     }
   return true;
 
@@ -290,10 +290,10 @@ key_des_fixup (uint8_t *key, int key_len, int ndc)
     {
       unsigned char *key = buf_read_alloc(&b, DES_KEY_SIZE);
       if (!key)
-	{
-	  msg (D_CRYPT_ERRORS, "CRYPTO INFO: fixup_key_DES: insufficient key material");
-	  return;
-	}
+    {
+      msg (D_CRYPT_ERRORS, "CRYPTO INFO: fixup_key_DES: insufficient key material");
+      return;
+    }
       des_key_set_parity(key);
     }
 }
@@ -319,9 +319,9 @@ cipher_kt_get (const char *ciphername)
 
   if (cipher->key_length/8 > MAX_CIPHER_KEY_LENGTH)
     msg (M_FATAL, "Cipher algorithm '%s' uses a default key size (%d bytes) which is larger than " PACKAGE_NAME "'s current maximum key size (%d bytes)",
-	 ciphername,
-	 cipher->key_length/8,
-	 MAX_CIPHER_KEY_LENGTH);
+     ciphername,
+     cipher->key_length/8,
+     MAX_CIPHER_KEY_LENGTH);
 
   return cipher;
 }
@@ -473,9 +473,9 @@ md_kt_get (const char *digest)
     msg (M_FATAL, "Message hash algorithm '%s' not found", digest);
   if (md->size > MAX_HMAC_KEY_LENGTH)
     msg (M_FATAL, "Message hash algorithm '%s' uses a default hash size (%d bytes) which is larger than " PACKAGE_NAME "'s current maximum hash size (%d bytes)",
-	 digest,
-	 md->size,
-	 MAX_HMAC_KEY_LENGTH);
+     digest,
+     md->size,
+     MAX_HMAC_KEY_LENGTH);
   return md;
 }
 

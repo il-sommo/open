@@ -45,7 +45,7 @@
  */
 struct key_type
 {
-  uint8_t cipher_length; 	/**< Cipher length, in bytes */
+  uint8_t cipher_length;    /**< Cipher length, in bytes */
   uint8_t hmac_length;		/**< HMAC length, in bytes */
   const cipher_kt_t *cipher;	/**< Cipher static parameters */
   const md_kt_t *digest;	/**< Message digest static parameters */
@@ -70,7 +70,7 @@ struct key
  */
 struct key_ctx
 {
-  cipher_ctx_t *cipher;      	/**< Generic cipher %context. */
+  cipher_ctx_t *cipher;         /**< Generic cipher %context. */
   hmac_ctx_t *hmac;               /**< Generic HMAC %context. */
 };
 
@@ -172,9 +172,9 @@ void read_key_file (struct key2 *key2, const char *file, const unsigned int flag
 int write_key_file (const int nkeys, const char *filename);
 
 int read_passphrase_hash (const char *passphrase_file,
-			  const md_kt_t *digest,
-			  uint8_t *output,
-			  int len);
+              const md_kt_t *digest,
+              uint8_t *output,
+              int len);
 
 void generate_key_random (struct key *key, const struct key_type *kt);
 
@@ -185,7 +185,7 @@ bool check_key (struct key *key, const struct key_type *kt);
 void fixup_key (struct key *key, const struct key_type *kt);
 
 bool write_key (const struct key *key, const struct key_type *kt,
-		struct buffer *buf);
+        struct buffer *buf);
 
 int read_key (struct key *key, const struct key_type *kt, struct buffer *buf);
 
@@ -200,8 +200,8 @@ void init_key_type (struct key_type *kt, const char *ciphername,
  */
 
 void init_key_ctx (struct key_ctx *ctx, struct key *key,
-		   const struct key_type *kt, int enc,
-		   const char *prefix);
+           const struct key_type *kt, int enc,
+           const char *prefix);
 
 void free_key_ctx (struct key_ctx *ctx);
 
@@ -240,8 +240,8 @@ void free_key_ctx_bi (struct key_ctx_bi *ctx);
  *     error occurred.
  */
 void openvpn_encrypt (struct buffer *buf, struct buffer work,
-		      const struct crypto_options *opt,
-		      const struct frame* frame);
+              const struct crypto_options *opt,
+              const struct frame* frame);
 
 
 /**
@@ -276,17 +276,17 @@ void openvpn_encrypt (struct buffer *buf, struct buffer work,
  *     an error occurred.
  */
 bool openvpn_decrypt (struct buffer *buf, struct buffer work,
-		      const struct crypto_options *opt,
-		      const struct frame* frame);
+              const struct crypto_options *opt,
+              const struct frame* frame);
 
 /** @} name Functions for performing security operations on data channel packets */
 
 void crypto_adjust_frame_parameters(struct frame *frame,
-				    const struct key_type* kt,
-				    bool cipher_defined,
-				    bool use_iv,
-				    bool packet_id,
-				    bool packet_id_long_form);
+                    const struct key_type* kt,
+                    bool cipher_defined,
+                    bool use_iv,
+                    bool packet_id,
+                    bool packet_id_long_form);
 
 
 /* Minimum length of the nonce used by the PRNG */
@@ -343,18 +343,18 @@ const char *keydirection2ascii (int kd, bool remote);
 
 /* print keys */
 void key2_print (const struct key2* k,
-		 const struct key_type *kt,
-		 const char* prefix0,
-		 const char* prefix1);
+         const struct key_type *kt,
+         const char* prefix0,
+         const char* prefix1);
 
 #ifdef ENABLE_SSL
 
 #define GHK_INLINE  (1<<0)
 void get_tls_handshake_key (const struct key_type *key_type,
-			    struct key_ctx_bi *ctx,
-			    const char *passphrase_file,
-			    const int key_direction,
-			    const unsigned int flags);
+                struct key_ctx_bi *ctx,
+                const char *passphrase_file,
+                const int key_direction,
+                const unsigned int flags);
 
 #else
 

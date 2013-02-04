@@ -69,19 +69,22 @@ static int default_ciphersuites[] =
 {
 #if POLARSSL_VERSION_NUMBER >= 0x01020000
     TLS_DHE_RSA_WITH_AES_256_CBC_SHA,
+    TLS_RSA_WITH_AES_256_CBC_SHA,
+/*    
     TLS_DHE_RSA_WITH_CAMELLIA_256_CBC_SHA,
     TLS_DHE_RSA_WITH_AES_128_CBC_SHA,
     TLS_DHE_RSA_WITH_CAMELLIA_128_CBC_SHA,
     TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA,
-    TLS_RSA_WITH_AES_256_CBC_SHA,
     TLS_RSA_WITH_CAMELLIA_256_CBC_SHA,
     TLS_RSA_WITH_AES_128_CBC_SHA,
     TLS_RSA_WITH_CAMELLIA_128_CBC_SHA,
     TLS_RSA_WITH_3DES_EDE_CBC_SHA,
+*/
     TLS_RSA_WITH_RC4_128_SHA,
-    TLS_RSA_WITH_RC4_128_MD5,
+//    TLS_RSA_WITH_RC4_128_MD5,
 #else
     SSL_EDH_RSA_AES_256_SHA,
+/*
     SSL_EDH_RSA_CAMELLIA_256_SHA,
     SSL_EDH_RSA_AES_128_SHA,
     SSL_EDH_RSA_CAMELLIA_128_SHA,
@@ -91,8 +94,10 @@ static int default_ciphersuites[] =
     SSL_RSA_AES_128_SHA,
     SSL_RSA_CAMELLIA_128_SHA,
     SSL_RSA_DES_168_SHA,
+*/
     SSL_RSA_RC4_128_SHA,
-    SSL_RSA_RC4_128_MD5,
+    
+//    SSL_RSA_RC4_128_MD5,
 #endif
     0
 };
@@ -149,13 +154,13 @@ tls_ctx_free(struct tls_root_ctx *ctx)
 
 #if defined(ENABLE_PKCS11)
       if (ctx->priv_key_pkcs11 != NULL) {
-	  pkcs11_priv_key_free(ctx->priv_key_pkcs11);
-	  free(ctx->priv_key_pkcs11);
+      pkcs11_priv_key_free(ctx->priv_key_pkcs11);
+      free(ctx->priv_key_pkcs11);
       }
 #endif
 
       if (ctx->allowed_ciphers)
-	free(ctx->allowed_ciphers);
+    free(ctx->allowed_ciphers);
 
       CLEAR(*ctx);
 
@@ -203,7 +208,7 @@ tls_ctx_restrict_ciphers(struct tls_root_ctx *ctx, const char *ciphers)
     {
       ctx->allowed_ciphers[i] = ssl_get_ciphersuite_id (token);
       if (0 != ctx->allowed_ciphers[i])
-	i++;
+    i++;
       token = strtok (NULL, ":");
     }
   free(tmp_ciphers_orig);
@@ -217,7 +222,7 @@ tls_ctx_load_dh_params (struct tls_root_ctx *ctx, const char *dh_file,
   if (!strcmp (dh_file, INLINE_FILE_TAG) && dh_file_inline)
     {
       if (0 != x509parse_dhm(ctx->dhm_ctx, dh_file_inline, strlen(dh_file_inline)))
-	msg (M_FATAL, "Cannot read inline DH parameters");
+    msg (M_FATAL, "Cannot read inline DH parameters");
   }
 else
   {
@@ -260,13 +265,13 @@ tls_ctx_load_cert_file (struct tls_root_ctx *ctx, const char *cert_file,
   if (!strcmp (cert_file, INLINE_FILE_TAG) && cert_file_inline)
     {
       if (0 != x509parse_crt(ctx->crt_chain, cert_file_inline,
-	  strlen(cert_file_inline)))
+      strlen(cert_file_inline)))
         msg (M_FATAL, "Cannot load inline certificate file");
     }
   else
     {
       if (0 != x509parse_crtfile(ctx->crt_chain, cert_file))
-	msg (M_FATAL, "Cannot load certificate file %s", cert_file);
+    msg (M_FATAL, "Cannot load certificate file %s", cert_file);
     }
   if (x509)
     {
@@ -291,32 +296,32 @@ tls_ctx_load_priv_file (struct tls_root_ctx *ctx, const char *priv_key_file,
   if (!strcmp (priv_key_file, INLINE_FILE_TAG) && priv_key_file_inline)
     {
       status = x509parse_key(ctx->priv_key,
-	  priv_key_file_inline, strlen(priv_key_file_inline),
-	  NULL, 0);
+      priv_key_file_inline, strlen(priv_key_file_inline),
+      NULL, 0);
       if (POLARSSL_ERR_PEM_PASSWORD_REQUIRED == status)
-	{
-	  char passbuf[512] = {0};
-	  pem_password_callback(passbuf, 512, 0, NULL);
-	  status = x509parse_key(ctx->priv_key,
-	      priv_key_file_inline, strlen(priv_key_file_inline),
-	      passbuf, strlen(passbuf));
-	}
+    {
+      char passbuf[512] = {0};
+      pem_password_callback(passbuf, 512, 0, NULL);
+      status = x509parse_key(ctx->priv_key,
+          priv_key_file_inline, strlen(priv_key_file_inline),
+          passbuf, strlen(passbuf));
+    }
     }
   else
     {
       status = x509parse_keyfile(ctx->priv_key, priv_key_file, NULL);
       if (POLARSSL_ERR_PEM_PASSWORD_REQUIRED == status)
-	{
-	  char passbuf[512] = {0};
-	  pem_password_callback(passbuf, 512, 0, NULL);
-	  status = x509parse_keyfile(ctx->priv_key, priv_key_file, passbuf);
-	}
+    {
+      char passbuf[512] = {0};
+      pem_password_callback(passbuf, 512, 0, NULL);
+      status = x509parse_keyfile(ctx->priv_key, priv_key_file, passbuf);
+    }
     }
   if (0 != status)
     {
 #ifdef ENABLE_MANAGEMENT
       if (management && (POLARSSL_ERR_PEM_PASSWORD_MISMATCH == status))
-	  management_auth_failure (management, UP_TYPE_PRIVATE_KEY, NULL);
+      management_auth_failure (management, UP_TYPE_PRIVATE_KEY, NULL);
 #endif
       msg (M_WARN, "Cannot load private key file %s", priv_key_file);
       return 1;
@@ -354,13 +359,13 @@ void tls_ctx_load_ca (struct tls_root_ctx *ctx, const char *ca_file,
   if (ca_file && !strcmp (ca_file, INLINE_FILE_TAG) && ca_file_inline)
     {
       if (0 != x509parse_crt(ctx->ca_chain, ca_file_inline, strlen(ca_file_inline)))
-	msg (M_FATAL, "Cannot load inline CA certificates");
+    msg (M_FATAL, "Cannot load inline CA certificates");
     }
   else
     {
       /* Load CA file for verifying peer supplied certificate */
       if (0 != x509parse_crtfile(ctx->ca_chain, ca_file))
-	msg (M_FATAL, "Cannot load CA certificate file %s", ca_file);
+    msg (M_FATAL, "Cannot load CA certificate file %s", ca_file);
     }
 }
 
@@ -374,13 +379,13 @@ tls_ctx_load_extra_certs (struct tls_root_ctx *ctx, const char *extra_certs_file
   if (!strcmp (extra_certs_file, INLINE_FILE_TAG) && extra_certs_file_inline)
     {
       if (0 != x509parse_crt(ctx->crt_chain, extra_certs_file_inline,
-	  strlen(extra_certs_file_inline)))
+      strlen(extra_certs_file_inline)))
         msg (M_FATAL, "Cannot load inline extra-certs file");
     }
   else
     {
       if (0 != x509parse_crtfile(ctx->crt_chain, extra_certs_file))
-	msg (M_FATAL, "Cannot load extra-certs file: %s", extra_certs_file);
+    msg (M_FATAL, "Cannot load extra-certs file: %s", extra_certs_file);
     }
 }
 
@@ -426,28 +431,28 @@ static int endless_buf_read( void * ctx, unsigned char * out, size_t out_len )
     {
       int block_len = in->first_block->length - in->data_start;
       if (block_len <= out_len - read_len)
-	{
-	  buffer_entry *cur_entry = in->first_block;
-	  memcpy(out + read_len, cur_entry->data + in->data_start,
-	      block_len);
+    {
+      buffer_entry *cur_entry = in->first_block;
+      memcpy(out + read_len, cur_entry->data + in->data_start,
+          block_len);
 
-	  read_len += block_len;
+      read_len += block_len;
 
-	  in->first_block = cur_entry->next_block;
-	  in->data_start = 0;
+      in->first_block = cur_entry->next_block;
+      in->data_start = 0;
 
-	  if (in->first_block == NULL)
-	    in->last_block = NULL;
+      if (in->first_block == NULL)
+        in->last_block = NULL;
 
-	  buf_free_entry(cur_entry);
-	}
+      buf_free_entry(cur_entry);
+    }
       else
-	{
-	  memcpy(out + read_len, in->first_block->data + in->data_start,
-	      out_len - read_len);
-	  in->data_start += out_len - read_len;
-	  read_len = out_len;
-	}
+    {
+      memcpy(out + read_len, in->first_block->data + in->data_start,
+          out_len - read_len);
+      in->data_start += out_len - read_len;
+      read_len = out_len;
+    }
     }
 
   return read_len;
@@ -506,10 +511,10 @@ void tls_ctx_personalise_random(struct tls_root_ctx *ctx)
 
       sha2(cert->tbs.p, cert->tbs.len, sha256_hash, false);
       if ( 0 != memcmp(old_sha256_hash, sha256_hash, sizeof(sha256_hash)))
-	{
-	  ctr_drbg_update(cd_ctx, sha256_hash, 32);
-	  memcpy(old_sha256_hash, sha256_hash, sizeof(old_sha256_hash));
-	}
+    {
+      ctr_drbg_update(cd_ctx, sha256_hash, 32);
+      memcpy(old_sha256_hash, sha256_hash, sizeof(old_sha256_hash));
+    }
     }
 }
 
@@ -534,20 +539,19 @@ void key_state_ssl_init(struct key_state_ssl *ks_ssl,
       ssl_set_session (ks_ssl->ctx, 0, 0, ks_ssl->ssn );
 #endif
       if (ssl_ctx->allowed_ciphers)
-	ssl_set_ciphersuites (ks_ssl->ctx, ssl_ctx->allowed_ciphers);
+    ssl_set_ciphersuites (ks_ssl->ctx, ssl_ctx->allowed_ciphers);
       else
-	ssl_set_ciphersuites (ks_ssl->ctx, default_ciphersuites);
-
+    ssl_set_ciphersuites (ks_ssl->ctx, default_ciphersuites);
       /* Initialise authentication information */
       if (is_server)
-	ssl_set_dh_param_ctx (ks_ssl->ctx, ssl_ctx->dhm_ctx );
+    ssl_set_dh_param_ctx (ks_ssl->ctx, ssl_ctx->dhm_ctx );
 #if defined(ENABLE_PKCS11)
       if (ssl_ctx->priv_key_pkcs11 != NULL)
-	ssl_set_own_cert_pkcs11( ks_ssl->ctx, ssl_ctx->crt_chain,
-	    ssl_ctx->priv_key_pkcs11 );
+    ssl_set_own_cert_pkcs11( ks_ssl->ctx, ssl_ctx->crt_chain,
+        ssl_ctx->priv_key_pkcs11 );
       else
 #endif
-	ssl_set_own_cert( ks_ssl->ctx, ssl_ctx->crt_chain, ssl_ctx->priv_key );
+    ssl_set_own_cert( ks_ssl->ctx, ssl_ctx->crt_chain, ssl_ctx->priv_key );
 
       /* Initialise SSL verification */
       ssl_set_authmode (ks_ssl->ctx, SSL_VERIFY_REQUIRED);
@@ -559,7 +563,7 @@ void key_state_ssl_init(struct key_state_ssl *ks_ssl,
       ALLOC_OBJ_CLEAR (ks_ssl->ct_in, endless_buffer);
       ALLOC_OBJ_CLEAR (ks_ssl->ct_out, endless_buffer);
       ssl_set_bio (ks_ssl->ctx, endless_buf_read, ks_ssl->ct_in,
-	  endless_buf_write, ks_ssl->ct_out);
+      endless_buf_write, ks_ssl->ct_out);
 
     }
 }
@@ -569,19 +573,19 @@ key_state_ssl_free(struct key_state_ssl *ks_ssl)
 {
   if (ks_ssl) {
       if (ks_ssl->ctx)
-	{
-	  ssl_free(ks_ssl->ctx);
-	  free(ks_ssl->ctx);
-	}
+    {
+      ssl_free(ks_ssl->ctx);
+      free(ks_ssl->ctx);
+    }
       if (ks_ssl->ssn)
-	free(ks_ssl->ssn);
+    free(ks_ssl->ssn);
       if (ks_ssl->ct_in) {
-	buf_free_entries(ks_ssl->ct_in);
-	free(ks_ssl->ct_in);
+    buf_free_entries(ks_ssl->ct_in);
+    free(ks_ssl->ct_in);
       }
       if (ks_ssl->ct_out) {
-	buf_free_entries(ks_ssl->ct_out);
-	free(ks_ssl->ct_out);
+    buf_free_entries(ks_ssl->ct_out);
+    free(ks_ssl->ct_out);
       }
       CLEAR(*ks_ssl);
   }
@@ -609,7 +613,7 @@ key_state_write_plaintext (struct key_state_ssl *ks, struct buffer *buf)
     {
       perf_pop ();
       if (POLARSSL_ERR_NET_WANT_WRITE == retval || POLARSSL_ERR_NET_WANT_READ == retval)
-	return 0;
+    return 0;
       msg (D_TLS_ERRORS, "TLS ERROR: write tls_write_plaintext error");
       return -1;
     }
@@ -617,8 +621,8 @@ key_state_write_plaintext (struct key_state_ssl *ks, struct buffer *buf)
   if (retval != buf->len)
     {
       msg (D_TLS_ERRORS,
-	  "TLS ERROR: write tls_write_plaintext incomplete %d/%d",
-	  retval, buf->len);
+      "TLS ERROR: write tls_write_plaintext incomplete %d/%d",
+      retval, buf->len);
       perf_pop ();
       return -1;
     }
@@ -656,7 +660,7 @@ key_state_write_plaintext_const (struct key_state_ssl *ks, const uint8_t *data, 
     {
       perf_pop ();
       if (POLARSSL_ERR_NET_WANT_WRITE == retval || POLARSSL_ERR_NET_WANT_READ == retval)
-	return 0;
+    return 0;
       msg (D_TLS_ERRORS, "TLS ERROR: write tls_write_plaintext_const error");
       return -1;
     }
@@ -664,8 +668,8 @@ key_state_write_plaintext_const (struct key_state_ssl *ks, const uint8_t *data, 
   if (retval != len)
     {
       msg (D_TLS_ERRORS,
-	  "TLS ERROR: write tls_write_plaintext_const incomplete %d/%d",
-	  retval, len);
+      "TLS ERROR: write tls_write_plaintext_const incomplete %d/%d",
+      retval, len);
       perf_pop ();
       return -1;
     }
@@ -707,7 +711,7 @@ key_state_read_ciphertext (struct key_state_ssl *ks, struct buffer *buf,
     {
       perf_pop ();
       if (POLARSSL_ERR_NET_WANT_WRITE == retval || POLARSSL_ERR_NET_WANT_READ == retval)
-	return 0;
+    return 0;
       msg (D_TLS_ERRORS, "TLS_ERROR: read tls_read_plaintext error");
       buf->len = 0;
       return -1;
@@ -750,7 +754,7 @@ key_state_write_ciphertext (struct key_state_ssl *ks, struct buffer *buf)
       perf_pop ();
 
       if (POLARSSL_ERR_NET_WANT_WRITE == retval || POLARSSL_ERR_NET_WANT_READ == retval)
-	return 0;
+    return 0;
       msg (D_TLS_ERRORS, "TLS ERROR: write tls_write_ciphertext error");
       return -1;
     }
@@ -758,8 +762,8 @@ key_state_write_ciphertext (struct key_state_ssl *ks, struct buffer *buf)
   if (retval != buf->len)
     {
       msg (D_TLS_ERRORS,
-	  "TLS ERROR: write tls_write_ciphertext incomplete %d/%d",
-	  retval, buf->len);
+      "TLS ERROR: write tls_write_ciphertext incomplete %d/%d",
+      retval, buf->len);
       perf_pop ();
       return -1;
     }
@@ -803,7 +807,7 @@ key_state_read_plaintext (struct key_state_ssl *ks, struct buffer *buf,
   if (retval < 0)
     {
       if (POLARSSL_ERR_NET_WANT_WRITE == retval || POLARSSL_ERR_NET_WANT_READ == retval)
-	return 0;
+    return 0;
       msg (D_TLS_ERRORS, "TLS_ERROR: read tls_read_plaintext error");
       buf->len = 0;
       perf_pop ();
@@ -841,9 +845,9 @@ print_details (struct key_state_ssl * ks_ssl, const char *prefix)
 
   s1[0] = s2[0] = 0;
   openvpn_snprintf (s1, sizeof (s1), "%s %s, cipher %s",
-		    prefix,
-		    ssl_get_version (ks_ssl->ctx),
-		    ssl_get_ciphersuite(ks_ssl->ctx));
+            prefix,
+            ssl_get_version (ks_ssl->ctx),
+            ssl_get_ciphersuite(ks_ssl->ctx));
 
 #if POLARSSL_VERSION_NUMBER >= 0x01020000
   cert = ks_ssl->ssn->peer_cert;
