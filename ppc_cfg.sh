@@ -1,15 +1,16 @@
 #!/bin/bash
 
-
 make clean
 here=`pwd`
 
 cd ../polar/library
-./x86.sh
+./ppc.sh
 cd ${here}
 
+ARCH=ppc CROSS_COMPILE=ppc_4xx- \
 LDFLAGS="-static" POLARSSL_CFLAGS="-I${here}/../polar/include/" \
 POLARSSL_LIBS="-L${here}/../polar/library/ -lpolarssl" \
-./configure --disable-lzo --with-crypto-library=polarssl \
+./configure --host=powerpc-linux --disable-lzo --with-crypto-library=polarssl \
 --disable-plugin-auth-pam  --disable-plugin-down-root && \
-make -j4
+ARCH=ppc CROSS_COMPILE=ppc_4xx- CC=ppc_4xx-gcc make -j4
+
