@@ -1,4 +1,6 @@
 #!/bin/bash
 
 make clean
-LDFLAGS="-static" POLARSSL_CFLAGS="-I/home/fabrizio/work/ovpn/polarssl-1.2.4/include/" POLARSSL_LIBS="-L/home/fabrizio/work/ovpn/polarssl-1.2.4/library/ -lpolarssl" ./configure --disable-lzo --with-crypto-library=polarssl --disable-plugin-auth-pam  --disable-plugin-down-root && make -j4
+here=`pwd`
+
+LDFLAGS="-static" POLARSSL_CFLAGS="-I${here}/../polar/include/" POLARSSL_LIBS="-L${here}/../polar/library/ -lpolarssl" ./configure --disable-lzo --with-crypto-library=polarssl --disable-plugin-auth-pam  --disable-plugin-down-root && make -j4
